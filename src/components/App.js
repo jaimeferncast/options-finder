@@ -30,8 +30,8 @@ function App() {
   const [error, setError] = useState("");
 
   const alphaVantageService = new AlphaVantageService();
-  // const delay = 180000;
-  const delay = 10000;
+  const delay = 180000;
+  // const delay = 10000;
 
   const handleInputChange = (e) => {
     error && setError("");
@@ -92,7 +92,7 @@ function App() {
           if (!response.data["Technical Analysis: RSI"]) {
             emailjs.send(
               "optionsFinder",
-              "template_zul55th",
+              "template_qxjqbpl",
               { stock: code.toUpperCase(), value },
               "user_oXSQFf0rfZ6DBbDUFwVxB",
               "19aaf1817399c2b0bf6a2be48ed26012"
@@ -108,13 +108,6 @@ function App() {
             );
             setInfo(`last updated at ${new Date().toString()}`);
           } else {
-            emailjs.send(
-              "optionsFinder",
-              "template_zul55th",
-              { stock: code.toUpperCase(), value },
-              "user_oXSQFf0rfZ6DBbDUFwVxB",
-              "19aaf1817399c2b0bf6a2be48ed26012"
-            );
             setInfo(`last updated at ${new Date().toString()}`);
           }
         });
