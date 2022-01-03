@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/components/App.css"],"names":[],"mappings":"AAAA,aACE,cAAe,CACf,iBAAkB,CAClB,UAAW,CACX,iBACF","file":"main.b6f1897f.chunk.css","sourcesContent":["div.ui.label {\n  margin-top: 8px;\n  margin-inline: 4px;\n  width: 53px;\n  text-align: center;\n}\n"]}
