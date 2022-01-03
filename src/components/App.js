@@ -2,6 +2,9 @@ import "semantic-ui-css/semantic.min.css";
 
 import { useState, useEffect, useRef } from "react";
 
+import emailjs from "@emailjs/browser";
+
+import "./App.css";
 import {
   Container,
   Form,
@@ -11,6 +14,7 @@ import {
   Button,
   Icon,
   Divider,
+  Message,
 } from "semantic-ui-react";
 
 import stocksList from "../data.js";
@@ -26,7 +30,8 @@ function App() {
   const [error, setError] = useState("");
 
   const alphaVantageService = new AlphaVantageService();
-  const delay = 180000;
+  // const delay = 180000;
+  const delay = 10000;
 
   const handleInputChange = (e) => {
     error && setError("");
@@ -73,6 +78,7 @@ function App() {
 
   useInterval(
     () => {
+      console.log("analizing...", index);
       if (index === stocksList.length) setIndex(0);
       else {
         const code = stocksList[index];
@@ -84,11 +90,32 @@ function App() {
             ].RSI;
 
           if (!response.data["Technical Analysis: RSI"]) {
-            setInfo(info + `${code} does not exist` + <br />);
+            emailjs.send(
+              "optionsFinder",
+              "template_zul55th",
+              { stock: code.toUpperCase(), value },
+              "user_oXSQFf0rfZ6DBbDUFwVxB",
+              "19aaf1817399c2b0bf6a2be48ed26012"
+            );
+            setInfo(`last updated at ${new Date().toString()}`);
           } else if (+value < 35) {
-            setInfo(info + `BINGO! ${code} has an RSI of ${value}` + <br />);
+            emailjs.send(
+              "optionsFinder",
+              "template_zul55th",
+              { stock: code.toUpperCase(), value },
+              "user_oXSQFf0rfZ6DBbDUFwVxB",
+              "19aaf1817399c2b0bf6a2be48ed26012"
+            );
+            setInfo(`last updated at ${new Date().toString()}`);
           } else {
-            setInfo(info + `${code}'s RSI is above 35` + <br />);
+            emailjs.send(
+              "optionsFinder",
+              "template_zul55th",
+              { stock: code.toUpperCase(), value },
+              "user_oXSQFf0rfZ6DBbDUFwVxB",
+              "19aaf1817399c2b0bf6a2be48ed26012"
+            );
+            setInfo(`last updated at ${new Date().toString()}`);
           }
         });
 
@@ -125,7 +152,7 @@ function App() {
               value={name}
               onChange={handleInputChange}
             />
-            {error && (
+            {!!error && (
               <Label basic color="red" pointing>
                 {error}
               </Label>
@@ -146,7 +173,17 @@ function App() {
           <Icon name="pause" />
           Pause
         </Button>
-        {info && <p>{info}</p>}
+        {!!info && (
+          <Message color="yellow">
+            <Message.Header>{info}</Message.Header>
+          </Message>
+        )}
+        <Message info>
+          <Message.Header>List of Companies:</Message.Header>
+          {stocksList.map((s) => (
+            <Label>{s.toUpperCase()}</Label>
+          ))}
+        </Message>
       </Container>
     </main>
   );
