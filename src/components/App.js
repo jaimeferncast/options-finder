@@ -30,8 +30,8 @@ function App() {
   const [error, setError] = useState("");
 
   const alphaVantageService = new AlphaVantageService();
-  const delay = 180000;
-  // const delay = 10000;
+  // const delay = 180000;
+  const delay = 2000;
 
   const handleInputChange = (e) => {
     error && setError("");
@@ -47,11 +47,9 @@ function App() {
     const response = await alphaVantageService.getRSI(name);
     if (!response.data["Technical Analysis: RSI"]) setError("Symbol not found");
     else {
-      setData(
-        response.data["Technical Analysis: RSI"][
-          Object.keys(response.data["Technical Analysis: RSI"])[0]
-        ]
-      );
+      const date = Object.keys(response.data["Technical Analysis: RSI"])[0],
+        value = response.data["Technical Analysis: RSI"][date].RSI;
+      setData(`${name.toUpperCase()} is at ${value} on the ${date}`);
       setName("");
       setIsLoading(false);
     }
@@ -78,26 +76,29 @@ function App() {
 
   useInterval(
     () => {
-      console.log("analizing...", index);
+      console.log(
+        "analizing...",
+        index === stocksList.length ? "reset index" : stocksList[index],
+        new Date().toString()
+      );
       if (index === stocksList.length) setIndex(0);
       else {
         const code = stocksList[index];
 
         alphaVantageService.getRSI(code).then((response) => {
-          const value =
-            response.data["Technical Analysis: RSI"][
-              Object.keys(response.data["Technical Analysis: RSI"])[0]
-            ].RSI;
+          const data = response.data["Technical Analysis: RSI"];
+          const date = data && Object.keys(data)[0];
+          const value = data && data[date].RSI;
 
-          if (!response.data["Technical Analysis: RSI"]) {
+          if (!data) {
             emailjs.send(
               "optionsFinder",
               "template_qxjqbpl",
-              { stock: code.toUpperCase(), value },
+              { code: code.toUpperCase() },
               "user_oXSQFf0rfZ6DBbDUFwVxB",
               "19aaf1817399c2b0bf6a2be48ed26012"
             );
-            setInfo(`last updated at ${new Date().toString()}`);
+            setInfo(`wrong code: ${code.toUpperCase()}`);
           } else if (+value < 35) {
             emailjs.send(
               "optionsFinder",
@@ -106,9 +107,13 @@ function App() {
               "user_oXSQFf0rfZ6DBbDUFwVxB",
               "19aaf1817399c2b0bf6a2be48ed26012"
             );
-            setInfo(`last updated at ${new Date().toString()}`);
+            setInfo(
+              `Last update, ${new Date().toString()}, ${code.toUpperCase()} at ${value} on the ${date}`
+            );
           } else {
-            setInfo(`last updated at ${new Date().toString()}`);
+            setInfo(
+              `Last update, ${new Date().toString()}, ${code.toUpperCase()} at ${value} on the ${date}`
+            );
           }
         });
 
@@ -152,10 +157,10 @@ function App() {
             )}
           </Form.Field>
         </Form>
-        {data && (
-          <pre>
-            <code>{JSON.stringify(data, null, 4)}</code>
-          </pre>
+        {!!data && (
+          <Message color="green">
+            <Message.Header>{data}</Message.Header>
+          </Message>
         )}
         <Divider />
         <Button icon labelPosition="right" color="green" onClick={runSearch}>
@@ -167,7 +172,7 @@ function App() {
           Pause
         </Button>
         {!!info && (
-          <Message color="yellow">
+          <Message color="yellow" size="mini">
             <Message.Header>{info}</Message.Header>
           </Message>
         )}
