@@ -30,8 +30,8 @@ function App() {
   const [error, setError] = useState("");
 
   const alphaVantageService = new AlphaVantageService();
-  // const delay = 180000;
-  const delay = 2000;
+  const delay = 180000;
+  // const delay = 2000;
 
   const handleInputChange = (e) => {
     error && setError("");
